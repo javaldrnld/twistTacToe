@@ -1,5 +1,6 @@
 from src.board import Board
 from src import constants
+from src.game import Game
 
 import pygame
 import sys
@@ -9,6 +10,9 @@ pygame.init()
 screen = pygame.display.set_mode((constants.WIDTH, constants.HEIGHT))
 screen.fill(constants.BACKGROUND_COLOR)
 clock = pygame.time.Clock()
+
+# Game Instance (logic)
+game = Game()
 
 # Board Instance
 board = Board(constants.WIDTH, constants.HEIGHT)
