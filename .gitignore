@@ -1,0 +1,42 @@
+# Python cache files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Virtual Environment (if you're using one)
+.venv/
+venv/
+
+# IDE specific files
+.vscode/
+# .idea/
+
+# macOS specific files
+#.DS_Store
+
+# Temporary files
+*.tmp
+
+# Log files
+*.log
+
+# If you're using Jupyter Notebooks
+.ipynb_checkpoints
+
+# Distribution / packaging
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
