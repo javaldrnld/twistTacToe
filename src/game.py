@@ -26,3 +26,6 @@ class Game:
                     return False
         return True
         """
+
+    def mark_move(self, row: int, column: int, player) -> None:
+        self.board[row][column] = player

@@ -20,6 +20,9 @@ board = Board(constants.WIDTH, constants.HEIGHT)
 # Add title
 pygame.display.set_caption("Ultimate TIC-TAC-TOE")
 
+# Assume 1v1 with friend
+player = 1
+
 # To run the window, use the loop
 while True:
     # pygame.QUIT event means the user clicked X to close the window.
@@ -30,3 +33,30 @@ while True:
         # Render 
         board.draw(screen)
         pygame.display.update()
+
+
+        # If the mouse is clicked it will switch to
+        if event.type == pygame.MOUSEBUTTONDOWN:
+            # How to access the coordinate to link the console board to the GUI
+            # MOUSEBUTTONDOWN -> Return position
+            # https://www.pygame.org/docs/ref/event.html#pygame.event.get
+            mouseX, mouseY = event.pos[0], event.pos[1]
+
+            # Are we gonna use conditionals to have a boundary within the board?
+            # Still using the coordinate return by the MOUSEBUTTONDOWN, then use // to get the floor division
+            clicked_row = int(mouseY // board.cell_size)
+            clicked_col = int(mouseX // board.cell_size)
+            # Why column is in X? -> Remember in pygame, x increases to the right, so we need to make it column
+            # Why row is in Y? -> Same logic to x, y increases downwards making it y as row
+
+            print(f"Row: {clicked_row} | Column: {clicked_col}") 
+
+            if game.space_is_available(clicked_row, clicked_col):
+                if player == 1:
+                    game.mark_move(clicked_row, clicked_col, 1)
+                    player = 2
+                else:
+                    game.mark_move(clicked_row, clicked_col, 2)
+                    player = 1
+                
+                print(game.board)

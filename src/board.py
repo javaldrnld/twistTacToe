@@ -10,7 +10,7 @@ class Board:
         self.width = width
         self.height = height
         self.cell_size = min(width, height) // 3 # To ensure all the cell size is same
-        self.grid = [["" for _ in range(3)] for _ in range(3)]
+        #self.grid = [["" for _ in range(3)] for _ in range(3)]
 
     def draw(self, screen) -> None:
 
@@ -24,6 +24,7 @@ class Board:
             # Start Position (200, 0) -> (200, 600)
             pygame.draw.line(screen, constants.BORDER_LINE, (self.cell_size * i, 0), (self.cell_size * i, self.width))
 
-    def mark_square(self, row: int, column: int, player) -> None:
-        self.grid[row][column] = player
+    # Move the function to the game class for purely game logic
+    # def mark_square(self, row: int, column: int, player) -> None:
+        # self.grid[row][column] = player
             
