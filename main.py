@@ -8,20 +8,21 @@ import sys
 
 pygame.init()
 screen = pygame.display.set_mode((constants.WIDTH, constants.HEIGHT))
-screen.fill(constants.BACKGROUND_COLOR)
+#screen.fill(constants.BACKGROUND_COLOR)
 clock = pygame.time.Clock()
 
 # Game Instance (logic)
 game = Game()
 
 # Board Instance
-board = Board(constants.WIDTH, constants.HEIGHT)
+board = Board(constants.WIDTH, constants.HEIGHT, game)
 
 # Add title
 pygame.display.set_caption("Ultimate TIC-TAC-TOE")
 
 # Assume 1v1 with friend
 player = 1
+
 
 # To run the window, use the loop
 while True:
@@ -30,17 +31,18 @@ while True:
         if event.type == pygame.QUIT:
             sys.exit()
 
-        # Render 
-        board.draw(screen)
-        pygame.display.update()
-
+        # Render
+        # Draw the board and figures
+        #board.draw(screen)
+        # Update the display
+        #pygame.display.update()
 
         # If the mouse is clicked it will switch to
         if event.type == pygame.MOUSEBUTTONDOWN:
             # How to access the coordinate to link the console board to the GUI
             # MOUSEBUTTONDOWN -> Return position
             # https://www.pygame.org/docs/ref/event.html#pygame.event.get
-            mouseX, mouseY = event.pos[0], event.pos[1]
+            mouseX, mouseY = event.pos
 
             # Are we gonna use conditionals to have a boundary within the board?
             # Still using the coordinate return by the MOUSEBUTTONDOWN, then use // to get the floor division
@@ -52,11 +54,21 @@ while True:
             print(f"Row: {clicked_row} | Column: {clicked_col}") 
 
             if game.space_is_available(clicked_row, clicked_col):
+                game.mark_move(clicked_row, clicked_col, player)
                 if player == 1:
-                    game.mark_move(clicked_row, clicked_col, 1)
+                    game.check_win(player)
                     player = 2
                 else:
-                    game.mark_move(clicked_row, clicked_col, 2)
+                    game.check_win(player)
                     player = 1
-                
-                print(game.board)
+
+    screen.fill(constants.BACKGROUND_COLOR)
+    board.draw(screen)
+    board.draw_figures(screen)
+    board.draw_win_line(screen)
+    pygame.display.update()
+
+
+
+    # Control frame rate
+    clock.tick(60)
