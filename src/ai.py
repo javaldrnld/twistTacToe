@@ -19,17 +19,17 @@ class AI:
         print("No empty cells available")  # Add this line
         return None
 
-    def minimax(self, game, maximizing_player: bool):
+    def minimax(self, game, depth, maximizing_player: bool):
         # Terminal Case
         case = game.final_state()
 
         # Player 1 case
         if case == 1:
-            return 1, None
+            return 10 - depth, None
         
         # Player 2 case
         if case == 2:
-            return -1, None # AI -> Minimize
+            return depth - 10, None # AI -> Minimize
         
         elif game.is_board_full():
             return 0, None
@@ -37,14 +37,14 @@ class AI:
 
         ### ALGORITHM
         if maximizing_player:
-            max_eval = float("-inf")
+            max_eval = -100
             best_move = None
             empty_cells = game.get_empty_squares()
 
             for (row, col) in empty_cells:
                 game_copy = copy.deepcopy(game)
                 game_copy.mark_move(row, col, self.player)
-                eval = self.minimax(game_copy, False)[0]
+                eval = self.minimax(game_copy, depth + 1, False)[0]
                 if eval > max_eval:
                     max_eval = eval
                     best_move = (row, col)
@@ -52,14 +52,14 @@ class AI:
             return max_eval, best_move
 
         elif not maximizing_player: # AI CODE
-            min_eval = float("inf")
+            min_eval = 100
             best_move = None
             empty_cells = game.get_empty_squares()
 
             for (row, col) in empty_cells:
                 game_copy = copy.deepcopy(game)
                 game_copy.mark_move(row, col, self.player)
-                eval = self.minimax(game_copy, True)[0]
+                eval = self.minimax(game_copy, depth + 1, True)[0]
                 if eval < min_eval:
                     min_eval = eval
                     best_move = (row, col)
@@ -70,11 +70,13 @@ class AI:
     def eval(self, game):
         if self.level == 0:
             # Random choice
-            eval = 'random'
+            #eval = 'random'
+            print("Random choice selected")
             move = self.random_choice(game)
         else:
             # minimax algo choice
-            eval, move = self.minimax(game, False) # False: AI -> Minimize 
+            print("Minimax choice selected")
+            eval, move = self.minimax(game, 0, False) # False: AI -> Minimize 
         print(f" AI Eval: {eval}, Move: {move}")
         return move
     

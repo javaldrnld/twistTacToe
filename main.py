@@ -36,11 +36,13 @@ clock = pygame.time.Clock()
 
 # Game Instance (logic)
 game = Game()
+print(f"Game Mode: {game.gamemode}")
 
 # Board Instance
 board = Board(constants.WIDTH, constants.HEIGHT, game)
 
 ai = AI(game)
+print(f"AI init with level {ai.level}")
 
 # Add title
 pygame.display.set_caption("Ultimate TIC-TAC-TOE")
