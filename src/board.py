@@ -89,7 +89,7 @@ class Board:
                     # pygame.draw.line(screen, constants.CROSS_COLOR, (start_x, end_y), (end_x, start_y), constants.CROSS_WIDTH)
     
     # TODO: READ ANALYZE
-    # Drawing for checcking
+    # Drawing for checking
     def draw_vertical_win(self, screen, col: int, player: int) -> None:
         pos_x = col * self.cell_size + self.cell_size // 2
         color = constants.CIRCLE_COLOR if player == 1 else constants.CROSS_COLOR
@@ -132,3 +132,9 @@ class Board:
         if all(self.game.board[i][2-i] == player for i in range(3)):
             self.draw_diagonal_win_asc(screen, player)
             return
+
+    def restart(self, screen) -> None:
+        self.game.restart()
+        screen.fill(constants.BACKGROUND_COLOR)
+        self.draw(screen)
+        pygame.display.update()

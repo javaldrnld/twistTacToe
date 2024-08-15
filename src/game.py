@@ -63,6 +63,7 @@ class Game:
 
         # return False
         # ANALYZE HOW ALGO WORK
+        # all() -> Returns true if all element is true in given array
     def check_win(self, player: int) -> bool:
         # Vertical Check
         for col in range(constants.BOARD_COLUMNS):
@@ -80,3 +81,6 @@ class Game:
             return True
         
         return False
+
+    def restart(self) -> None:
+        self.board = np.zeros((constants.BOARD_ROWS, constants.BOARD_COLUMNS))

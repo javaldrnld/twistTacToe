@@ -23,13 +23,16 @@ pygame.display.set_caption("Ultimate TIC-TAC-TOE")
 # Assume 1v1 with friend
 player = 1
 
+# Flags
+running = True
+game_over = False
 
 # To run the window, use the loop
-while True:
+while running:
     # pygame.QUIT event means the user clicked X to close the window.
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
-            sys.exit()
+            running = False
 
         # Render
         # Draw the board and figures
@@ -38,7 +41,7 @@ while True:
         #pygame.display.update()
 
         # If the mouse is clicked it will switch to
-        if event.type == pygame.MOUSEBUTTONDOWN:
+        if not game_over and event.type == pygame.MOUSEBUTTONDOWN:
             # How to access the coordinate to link the console board to the GUI
             # MOUSEBUTTONDOWN -> Return position
             # https://www.pygame.org/docs/ref/event.html#pygame.event.get
@@ -55,20 +58,34 @@ while True:
 
             if game.space_is_available(clicked_row, clicked_col):
                 game.mark_move(clicked_row, clicked_col, player)
-                if player == 1:
-                    game.check_win(player)
-                    player = 2
+                if game.check_win(player):
+                    print(f"Player {player} wins!")
+                    game_over = True
+                elif game.is_board_full():
+                    print("It's draw")
+                    game_over = True
                 else:
-                    game.check_win(player)
-                    player = 1
+                    player = 3 - player
+
+        # Restart the game
+        if event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_r:
+                game.restart()
+                board.restart(screen)
+                player = 1
+                game_over = False
 
     screen.fill(constants.BACKGROUND_COLOR)
     board.draw(screen)
     board.draw_figures(screen)
-    board.draw_win_line(screen)
+    if game_over:
+        board.draw_win_line(screen)
     pygame.display.update()
 
 
 
     # Control frame rate
     clock.tick(60)
+
+pygame.quit()
+sys.exit()
