@@ -7,17 +7,38 @@ class Game:
     def __init__(self) -> None:
         self.board = np.zeros((constants.BOARD_ROWS, constants.BOARD_COLUMNS))
         # [[" " for _ in range(3)] for _ in range(3)]
+        self.empty_squares = self.board
+        self.marked_squares = 0
+        self.current_player = 1
+        self.gamemode = 'ai' #ai
+
         
 
     # Game function
-    # def insert_move(self, row: int, column: int, player: int) -> None:
-        # """Mark a square on the board with the player move, it can be string but need to tweak the np and change to ordinary list"""
-        # self.board[row][column] = player
 
+    def final_state(self):
+        """
+            @return 0 -> No win yet
+            @return 1 -> Player 1 wins
+            @return 2 -> Player 2 wins
+        """
+        if self.check_win(1):
+            return 1
+        
+        if self.check_win(2):
+            return 2
+        
+        if self.is_board_full():
+            return 0
+        
+        return 0 # Subject to change 0 for both no win yet and draw
+
+    # empty_sqr
     def space_is_available(self, row: int, column: int) -> bool:
         """Check if space is available"""
         return self.board[row][column] == 0
 
+    # is_full
     def is_board_full(self) -> bool:
         """Use the count function to count if there's still 0"""
         return np.count_nonzero(self.board) == self.board.size
@@ -29,39 +50,32 @@ class Game:
                     return False
         return True
         """
-
+    
+    # Mark_sqr
     def mark_move(self, row: int, column: int, player) -> None:
-        print(f"Marking move: Row {row}, Col {column}, Player {player}")
+        # print(f"Marking move: Row {row}, Col {column}, Player {player}")
         self.board[row][column] = player
-        print("Updated board:")
-        print(self.board)
+        self.marked_squares += 1
+        # print("Updated board:")
+        # print(self.board)
 
-# TODO: FIX THE CHECKING ALGORITM MAKE IT EFFICIENT
-    ## WInning Condition Check
-    # def check_win(self, player: int):
-        # # Vertical Check using loop
-        # for col in range(constants.BOARD_COLUMNS):
-            # if self.board[0][col] == player and self.board[1][col] == player and self.board[2][col] == player:
-                # #self.game.draw_vertical_win(col, player)
-                # return True
-            
-        # # Horizontal Check
-        # for row in range(constants.BOARD_ROWS):
-            # if self.board[row][0] == player and self.board[row][1] == player and self.board[row][2] == player:
-                # #self.draw_horizontal_win(row, player)
-                # return True
+    # LEt's see kung same lang ba sila nung is_board_full or nope
+    # def is_full(self) -> None:
+        # return self.marked_squares == 9
 
-        # # Ascending Diagonal Win Check
-        # if self.board[2][0] == player and self.board[1][1] == player and self.board[0][2] == player:
-            # #self.draw_diagonal_win_asc(player)
-            # return True
-        
-        # # Descending Diagonal Win Check
-        # if self.board[0][0] == player and self.board[1][1] == player and self.board[2][2] == player:
-            # #self.draw_diagonal_win_dsc(player)
-            # return True
+    # is_empty
+    def is_empty(self):
+        return self.marked_squares == 0
+    
+    def get_empty_squares(self):
+        empty_sqrs = []
+        for row in range(constants.BOARD_ROWS):
+            for col in range(constants.BOARD_COLUMNS):
+                if self.space_is_available(row, col):
+                    empty_sqrs.append((row, col))
+        return empty_sqrs
 
-        # return False
+
         # ANALYZE HOW ALGO WORK
         # all() -> Returns true if all element is true in given array
     def check_win(self, player: int) -> bool:
@@ -84,3 +98,9 @@ class Game:
 
     def restart(self) -> None:
         self.board = np.zeros((constants.BOARD_ROWS, constants.BOARD_COLUMNS))
+        self.current_player = 1
+
+    def switch_player(self) -> None:
+        self.current_player = 3 - self.current_player
+
+    ##### AI FUNCTIONS

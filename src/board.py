@@ -40,11 +40,8 @@ class Board:
     # def mark_square(self, row: int, column: int, player) -> None:
     # self.grid[row][column] = player
     def draw_figures(self, screen) -> None:
-        print("Drawing figures. Game state:")
-        print(self.game.board)
         for row in range(constants.BOARD_ROWS):
             for col in range(constants.BOARD_COLUMNS):
-                print(f"Drawing circle at {row}, {col}")
                 center_x = int(col * self.cell_size + self.cell_size // 2)
                 center_y = int(row * self.cell_size + self.cell_size // 2)
                 if self.game.board[row][col] == 1:
@@ -56,7 +53,6 @@ class Board:
                         constants.CIRCLE_WIDTH,
                     )
                 elif self.game.board[row][col] == 2:
-                    print(f"Drawing X at {row}, {col}")
                     # Draw X for player 2
                     offset = self.cell_size // 4
                     pygame.draw.line(
