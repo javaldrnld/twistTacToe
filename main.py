@@ -61,11 +61,19 @@ while running:
                 if game.check_win(player):
                     print(f"Player {player} wins!")
                     game_over = True
+                    #board.display_restart_message(screen)
                 elif game.is_board_full():
                     print("It's draw")
                     game_over = True
+                    #board.display_restart_message(screen)
                 else:
                     player = 3 - player
+                
+        # if game_over:
+            # game.restart()
+            # board.restart(screen)
+            # player = 1
+            # game_over = False
 
         # Restart the game
         if event.type == pygame.KEYDOWN:
@@ -80,6 +88,7 @@ while running:
     board.draw_figures(screen)
     if game_over:
         board.draw_win_line(screen)
+        #board.display_restart_message(screen)
     pygame.display.update()
 
 
