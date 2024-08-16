@@ -11,6 +11,9 @@ class Game:
         self.marked_squares = 0
         self.current_player = 1
         self.gamemode = 'ai' #ai
+        self.is_rotating = False
+        self.rotation_angle = 0
+        self.rotation_speed = 2
 
     # Game function
 
@@ -30,6 +33,19 @@ class Game:
             return 0
         
         return 0 # Subject to change 0 for both no win yet and draw
+
+    def rotate_board(self) -> None:
+        #self.board = np.rot90(self.board, k=1)
+        self.is_rotating = True
+        self.rotation_angle = 0
+
+    def update_rotation(self) -> None:
+        if self.is_rotating:
+            self.rotation_angle += self.rotation_speed
+            if self.rotation_angle >= 90:
+                self.board = np.rot90(self.board, k=1)
+                self.rotation_angle = 0
+                self.is_rotating = False
 
     # empty_sqr
     def space_is_available(self, row: int, column: int) -> bool:
@@ -56,6 +72,7 @@ class Game:
         self.marked_squares += 1
         # print("Updated board:")
         # print(self.board)
+        self.rotate_board()
 
     # LEt's see kung same lang ba sila nung is_board_full or nope
     # def is_full(self) -> None:
@@ -124,7 +141,7 @@ class Game:
                 self.switch_player()
         return "continue"
     
-    ### vs a    
+    ### vs ai
     def handle_ai_move(self, ai):
         ai_move = ai.eval(self)
         if ai_move is not None:

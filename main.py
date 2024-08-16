@@ -22,7 +22,7 @@ ai = AI(game)
 print(f"AI init with level {ai.level}")
 
 # Add title
-pygame.display.set_caption("Ultimate TIC-TAC-TOE")
+pygame.display.set_caption("TIC-TAC-TOE")
 
 
 # Flags
@@ -57,6 +57,7 @@ while running:
             reset_game()
             continue
             
+        
         #### SELECTION SCREEN ####
         if not game_started:
             pvprect, pvairect, pvp_minimax_rect = board.draw_selection_screen(screen)
@@ -96,23 +97,33 @@ while running:
                     if game_state == "draw":
                         print("It's a draw")
                     else:
-                        print(f"Player {game_state} wins!")
+                        print(f"Player {game_state.split('_')[1]} wins!")
 
 
                 # Vs AI
                 if not game_over and vs_ai and game.current_player == 2 and game.gamemode == 'ai':
                     pygame.display.update()
-                    game_state = game.handle_ai_move(ai)
-                    if game_state != "continue":
-                        game_over = True
+                    #game_state = game.handle_ai_move(ai)
+                    ai_move = ai.eval(game)
+                    if ai_move:
+                        row, col = ai_move
+                        game_state = game.handle_play_move(row, col)
                         if game_state != "continue":
                             game_over = True
-                            if game_state == "ai_win":
-                                print(f"AI ({['Random', 'Minimax'][ai_level]}) wins!")
-                            elif game_state == "draw":
-                                print("It's a draw")
-                            elif game_state == "no_moves":
-                                print("No more moves")
+                            if game_state == "draw":
+                                print("Draw")
+                            elif game_state == "player_win":
+                                print("Wind")
+                    #if game_state != "continue":
+                        #game_over = True
+                        #if game_state != "continue":
+                            #game_over = True
+                            #if game_state == "ai_win":
+                                #print(f"AI ({['Random', 'Minimax'][ai_level]}) wins!")
+                            #elif game_state == "draw":
+                                #print("It's a draw")
+                            #elif game_state == "no_moves":
+                                #print("No more moves")
                                 
 
                 # if game_over:
@@ -120,6 +131,8 @@ while running:
                         # game.restart()
                         # board.restart(screen)
                         # game_over = False
+        if game_started and not game_over:
+            game.update_rotation()
 
         if game_started:
             screen.fill(constants.BACKGROUND_COLOR)

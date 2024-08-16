@@ -40,6 +40,8 @@ class Board:
     # def mark_square(self, row: int, column: int, player) -> None:
     # self.grid[row][column] = player
     def draw_figures(self, screen) -> None:
+        rotation_surface = pygame.Surface((self.width, self.height), pygame.SRCALPHA)
+        rotation_surface.fill((0, 0, 0, 0))  # Transparent background
         for row in range(constants.BOARD_ROWS):
             for col in range(constants.BOARD_COLUMNS):
                 center_x = int(col * self.cell_size + self.cell_size // 2)
@@ -76,6 +78,12 @@ class Board:
                     # pygame.draw.line(screen, constants.CROSS_COLOR, (start_x, start_y), (end_x, end_y), constants.CROSS_WIDTH)
                     # pygame.draw.line(screen, constants.CROSS_COLOR, (start_x, end_y), (end_x, start_y), constants.CROSS_WIDTH)
     
+        if self.game.is_rotating:
+            rotated_surface = pygame.transform.rotate(rotation_surface, self.game.rotation_angle)
+            new_rect = rotated_surface.get_rect(center=(self.width // 2, self.height // 2))
+            screen.blit(rotated_surface, new_rect.topleft)
+        else:
+            screen.blit(rotation_surface, (0, 0))
     # TODO: READ ANALYZE
     # Drawing for checking
     def draw_vertical_win(self, screen, col: int, player: int) -> None:
