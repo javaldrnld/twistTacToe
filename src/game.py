@@ -12,8 +12,6 @@ class Game:
         self.current_player = 1
         self.gamemode = 'ai' #ai
 
-        
-
     # Game function
 
     def final_state(self):
@@ -95,7 +93,7 @@ class Game:
             return True
         
         return False
-
+    
     def restart(self) -> None:
         self.board = np.zeros((constants.BOARD_ROWS, constants.BOARD_COLUMNS))
         self.current_player = 1
@@ -103,4 +101,41 @@ class Game:
     def switch_player(self) -> None:
         self.current_player = 3 - self.current_player
 
-    ##### AI FUNCTIONS
+    def change_mode(self) -> None:
+        self.gamemode = 'ai' if self.gamemode == 'pvp' else 'pvp'
+
+    def is_over(self) -> bool:
+        return self.final_state(show=True) != 0 or self.is_board_full()
+    
+    def reset(self):
+        self.__init__()
+
+    ##### vs player
+    def handle_play_move(self, row, col):
+        if self.space_is_available(row, col):
+            self.mark_move(row, col, self.current_player)
+            if self.check_win(self.current_player):
+                print(f"Player {self.current_player} wins!")
+                return "player_win" 
+            elif self.is_board_full():
+                print("It's a draw")
+                return "draw"
+            else:
+                self.switch_player()
+        return "continue"
+    
+    ### vs a    
+    def handle_ai_move(self, ai):
+        ai_move = ai.eval(self)
+        if ai_move is not None:
+            row, col = ai_move
+            if self.space_is_available(row, col):
+                self.mark_move(row, col, self.current_player) 
+                if self.check_win(self.current_player):
+                    return "ai_win"
+                elif self.is_board_full():
+                    return "draw"
+                self.switch_player()
+        else:
+            return "no_moves"
+        return "continue"

@@ -23,14 +23,9 @@ class AI:
         # Terminal Case
         case = game.final_state()
 
-        # Player 1 case
-        if case == 1:
-            return 10 - depth, None
-        
-        # Player 2 case
-        if case == 2:
-            return depth - 10, None # AI -> Minimize
-        
+        if case in (1, 2):
+            return (10 - depth) * (1 if case == 1 else -1), None
+
         elif game.is_board_full():
             return 0, None
         
@@ -70,7 +65,7 @@ class AI:
     def eval(self, game):
         if self.level == 0:
             # Random choice
-            #eval = 'random'
+            eval = 'random'
             print("Random choice selected")
             move = self.random_choice(game)
         else:

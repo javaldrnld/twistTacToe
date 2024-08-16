@@ -98,7 +98,12 @@ class Board:
 
     # Check for all win lien
     def draw_win_line(self, screen) -> None:
-        player = 1 if self.game.check_win(1) else 2
+        state = self.game.final_state()
+        if state == 0:
+            return
+        
+        player = state
+        color = constants.CIRCLE_COLOR if player == 1 else constants.CROSS_COLOR
         
         # Check vertical wins
         for col in range(constants.BOARD_COLUMNS):
@@ -130,3 +135,21 @@ class Board:
         screen.fill(constants.BACKGROUND_COLOR)
         self.draw(screen)
         pygame.display.update()
+
+    def draw_selection_screen(self, screen) -> None:
+        screen.fill(constants.BACKGROUND_COLOR)
+        font = pygame.font.Font(None, 36)
+
+        pvp_text = font.render("1. Player vs Player", True, constants.BORDER_LINE)
+        pvai_text = font.render("2. Player vs AI (Random)", True, constants.BORDER_LINE)
+        pvai_minimax_text = font.render("3. Player vs AI (Minimax)", True, constants.BORDER_LINE)
+
+        pvp_rect = pvp_text.get_rect(center=(constants.WIDTH // 2, constants.HEIGHT // 2 - 50))
+        pvai_rect = pvai_text.get_rect(center=(constants.WIDTH // 2, constants.HEIGHT // 2 + 50))
+        pvai_minimax_rect = pvai_minimax_text.get_rect(center=(constants.WIDTH // 2, constants.HEIGHT // 2 + 150))
+
+        screen.blit(pvp_text, pvp_rect)
+        screen.blit(pvai_text, pvai_rect)
+        screen.blit(pvai_minimax_text, pvai_minimax_rect)
+
+        return pvp_rect, pvai_rect, pvai_minimax_rect
