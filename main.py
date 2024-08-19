@@ -13,7 +13,7 @@ clock = pygame.time.Clock()
 
 ##### Instance of Class
 
-game = Game()
+game = Game(ai_first=False)
 print(f"Game Mode: {game.gamemode}")
 
 board = Board(constants.WIDTH, constants.HEIGHT, game)
@@ -36,7 +36,7 @@ ai_level = 0
 #### RESET GAME
 def reset_game() -> None:
     global game, board, ai, game_over, game_started, vs_ai, ai_level
-    game = Game()
+    game.reset()
     board = Board(constants.WIDTH, constants.HEIGHT, game)
     ai = AI(game, ai_level) if vs_ai else None
     game_over = False
@@ -91,7 +91,7 @@ while running:
                 # Why row is in Y? -> Same logic to x, y increases downwards making it y as row
 
                 # Vs Player
-                game_state = game.handle_play_move(clicked_row, clicked_col)
+                game_state = game.handle_move(clicked_row, clicked_col)
                 if game_state != "continue":
                     game_over = True
                     if game_state == "draw":
@@ -107,7 +107,7 @@ while running:
                     ai_move = ai.eval(game)
                     if ai_move:
                         row, col = ai_move
-                        game_state = game.handle_play_move(row, col)
+                        game_state = game.handle_move(row, col)
                         if game_state != "continue":
                             game_over = True
                             if game_state == "draw":
@@ -131,8 +131,6 @@ while running:
                         # game.restart()
                         # board.restart(screen)
                         # game_over = False
-        if game_started and not game_over:
-            game.update_rotation()
 
         if game_started:
             screen.fill(constants.BACKGROUND_COLOR)

@@ -1,21 +1,34 @@
+########## IMPORT ##########  
 from . import constants
-
 import numpy as np
-import pygame
+########## IMPORT ##########  
+
 
 class Game:
-    def __init__(self) -> None:
+    """ Game Logic """
+
+    def __init__(self, ai_first = True) -> None:
+        """Instance of Game Logic
+
+        Args:
+            ai_first (bool, optional): AI First to Move. Defaults to True.
+        """
+
         self.board = np.zeros((constants.BOARD_ROWS, constants.BOARD_COLUMNS))
-        # [[" " for _ in range(3)] for _ in range(3)]
+        self.ai_first = ai_first
+        self.current_player = 2 if ai_first else 1
+        self.gamemode = 'ai' 
         self.empty_squares = self.board
         self.marked_squares = 0
-        self.current_player = 1
-        self.gamemode = 'ai' #ai
-        self.is_rotating = False
-        self.rotation_angle = 0
-        self.rotation_speed = 2
 
-    # Game function
+    def reset(self):
+        """ Reset the game every time it end
+        """
+        self.board = np.zeros((constants.BOARD_ROWS, constants.BOARD_COLUMNS))
+        self.marked_squares = 0
+        self.ai_first = not self.ai_first
+        self.current_player = 2 if self.ai_first else 1
+
 
     def final_state(self):
         """
@@ -23,36 +36,48 @@ class Game:
             @return 1 -> Player 1 wins
             @return 2 -> Player 2 wins
         """
-        if self.check_win(1):
-            return 1
-        
-        if self.check_win(2):
-            return 2
+        for player in [1, 2]:
+            if self.check_win(player):
+                return player
         
         if self.is_board_full():
             return 0
         
-        return 0 # Subject to change 0 for both no win yet and draw
+        return None # On going match
+
+    ##### vs player
+    def handle_move(self, row: int, col: int) -> str:
+        """Return if the last move played is winning move, draw move or ongoing
+        match.
+
+        Args:
+            row (int): Row of array
+            col (int): Column of array
+
+        Returns:
+            str: Text whether it is draw, win, or continue
+        """
+        if self.space_is_available(row, col):
+            self.mark_move(row, col, self.current_player)
+            state = self.final_state()
+            if state is not None:  
+                if state == 0:
+                    return "draw"
+                else:
+                    return f"player_{state}_win"
+            self.switch_player()
+        return "continue"
 
     def rotate_board(self) -> None:
-        #self.board = np.rot90(self.board, k=1)
-        self.is_rotating = True
-        self.rotation_angle = 0
+        """ Rotate the board every turn
+        """
+        self.board = np.rot90(self.board, k=1)
 
-    def update_rotation(self) -> None:
-        if self.is_rotating:
-            self.rotation_angle += self.rotation_speed
-            if self.rotation_angle >= 90:
-                self.board = np.rot90(self.board, k=1)
-                self.rotation_angle = 0
-                self.is_rotating = False
-
-    # empty_sqr
     def space_is_available(self, row: int, column: int) -> bool:
-        """Check if space is available"""
+        """Check if space is available
+        """
         return self.board[row][column] == 0
 
-    # is_full
     def is_board_full(self) -> bool:
         """Use the count function to count if there's still 0"""
         return np.count_nonzero(self.board) == self.board.size
@@ -65,22 +90,21 @@ class Game:
         return True
         """
     
-    # Mark_sqr
-    def mark_move(self, row: int, column: int, player) -> None:
-        # print(f"Marking move: Row {row}, Col {column}, Player {player}")
+    def mark_move(self, row: int, column: int, player: int) -> None:
+        """Mark a move in a board
+
+        Args:
+            row (int): Row where the user want to place
+            column (int): Column wher the user want to place
+            player (int): Player 1 for user or 2 for AI/player 2
+        """
         self.board[row][column] = player
         self.marked_squares += 1
-        # print("Updated board:")
-        # print(self.board)
         self.rotate_board()
 
-    # LEt's see kung same lang ba sila nung is_board_full or nope
-    # def is_full(self) -> None:
-        # return self.marked_squares == 9
-
-    # is_empty
-    def is_empty(self):
-        return self.marked_squares == 0
+    # To be deleted is_empty
+    # def is_empty(self):
+        # return self.marked_squares == 0
     
     def get_empty_squares(self):
         empty_sqrs = []
@@ -123,23 +147,6 @@ class Game:
 
     def is_over(self) -> bool:
         return self.final_state(show=True) != 0 or self.is_board_full()
-    
-    def reset(self):
-        self.__init__()
-
-    ##### vs player
-    def handle_play_move(self, row, col):
-        if self.space_is_available(row, col):
-            self.mark_move(row, col, self.current_player)
-            if self.check_win(self.current_player):
-                print(f"Player {self.current_player} wins!")
-                return "player_win" 
-            elif self.is_board_full():
-                print("It's a draw")
-                return "draw"
-            else:
-                self.switch_player()
-        return "continue"
     
     ### vs ai
     def handle_ai_move(self, ai):

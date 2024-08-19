@@ -14,6 +14,7 @@ class Board:
         self.game = game
         pygame.font.init()
         self.font = pygame.font.SysFont("comincsans", 36)
+        self.large_font = pygame.font.Font(None, 72)
 
     def draw(self, screen) -> None:
         # Start 1 since we will multiply by cell_size
@@ -71,19 +72,7 @@ class Board:
                         (center_x + offset, center_y - offset),
                         constants.CROSS_WIDTH
                     )
-                    # start_x = col * self.cell_size + 200
-                    # start_y = row * self.cell_size + 200
-                    # end_x = (col + 1) * self.cell_size - 200
-                    # end_y = (row + 1) * self.cell_size - 200
-                    # pygame.draw.line(screen, constants.CROSS_COLOR, (start_x, start_y), (end_x, end_y), constants.CROSS_WIDTH)
-                    # pygame.draw.line(screen, constants.CROSS_COLOR, (start_x, end_y), (end_x, start_y), constants.CROSS_WIDTH)
     
-        if self.game.is_rotating:
-            rotated_surface = pygame.transform.rotate(rotation_surface, self.game.rotation_angle)
-            new_rect = rotated_surface.get_rect(center=(self.width // 2, self.height // 2))
-            screen.blit(rotated_surface, new_rect.topleft)
-        else:
-            screen.blit(rotation_surface, (0, 0))
     # TODO: READ ANALYZE
     # Drawing for checking
     def draw_vertical_win(self, screen, col: int, player: int) -> None:
@@ -161,3 +150,27 @@ class Board:
         screen.blit(pvai_minimax_text, pvai_minimax_rect)
 
         return pvp_rect, pvai_rect, pvai_minimax_rect
+    
+
+    def draw_winner_announcement(self, screen, winner):
+        # Create a semi-transparent overlay
+        overlay = pygame.Surface((self.width, self.height), pygame.SRCALPHA)
+        overlay.fill((0, 0, 0, 128))  # Black with 50% opacity
+        screen.blit(overlay, (0, 0))
+
+        # Prepare the winner text
+        if winner == "draw":
+            text = "It's a Draw!"
+        else:
+            text = f"Player {winner} Wins!"
+        
+        text_surface = self.large_font.render(text, True, constants.WINNER_TEXT_COLOR)
+        text_rect = text_surface.get_rect(center=(self.width // 2, self.height // 2 - 50))
+        
+        # Draw the winner text
+        screen.blit(text_surface, text_rect)
+
+        # Draw the restart message
+        restart_text = self.font.render("Press R to restart", True, constants.BORDER_LINE)
+        restart_rect = restart_text.get_rect(center=(self.width // 2, self.height // 2 + 50))
+        screen.blit(restart_text, restart_rect)
