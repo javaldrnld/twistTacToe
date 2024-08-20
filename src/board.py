@@ -124,7 +124,7 @@ class Board:
             return
 
     def display_restart_message(self, screen) -> None:
-        text = self.font.render("", True, constants.BORDER_LINE)
+        text = self.font.render("Press R to restart", True, constants.BORDER_LINE)
         screen.blit(text, (self.width // 2 - text.get_width() // 2, self.height // 2 - text.get_height() // 2))
 
     def restart(self, screen) -> None:

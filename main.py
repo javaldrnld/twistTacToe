@@ -44,16 +44,6 @@ def reset_game() -> None:
     vs_ai = False
     ai_level = 0
 
-def draw_dimmed_board(screen, board, winner_text):
-    dim_surface = pygame.Surface((constants.WIDTH, constants.HEIGHT), pygame.SRCALPHA)
-    dim_surface.fill((0, 0, 0, 128))  # Semi-transparent black
-    screen.blit(dim_surface, (0, 0))
-    
-    font = pygame.font.Font(None, 74)
-    text_surface = font.render(winner_text, True, (255, 255, 255))
-    text_rect = text_surface.get_rect(center=(constants.WIDTH // 2, constants.HEIGHT // 2))
-    screen.blit(text_surface, text_rect)
-
 ##### MAIN LOOP #####
 
 # To run the window, use the loop
@@ -106,10 +96,8 @@ while running:
                     game_over = True
                     if game_state == "draw":
                         print("It's a draw")
-                        winner_text = "It's a draw"
                     else:
                         print(f"Player {game_state.split('_')[1]} wins!")
-                        winner_text = f"Player {game_state.split('_')[1]} wins!"
 
 
                 # Vs AI
@@ -124,10 +112,8 @@ while running:
                             game_over = True
                             if game_state == "draw":
                                 print("Draw")
-                                winner_text = "It's a draw"
                             elif game_state == "player_win":
                                 print("Wind")
-                                winner_text = f"AI ({['Random', 'Minimax'][ai_level]}) wins!"
                     #if game_state != "continue":
                         #game_over = True
                         #if game_state != "continue":
@@ -152,7 +138,6 @@ while running:
             board.draw_figures(screen)
             if game_over:
                 board.draw_win_line(screen)
-                draw_dimmed_board(screen, board, winner_text)
                 board.display_restart_message(screen)
         
     pygame.display.update()
