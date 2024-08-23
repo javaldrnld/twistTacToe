@@ -1,22 +1,45 @@
+"""
+Module for managing the game board in a Tic-Tac-Toe game using Pygame.
+
+This module contains the Board class which handles drawing the game board,
+game pieces, and various UI elements.
+"""
 from . import constants
 import pygame
 
-
-# __all__ = [Board]
-# I use class to maintain my code in an organize way and to find the bug easily.
-
 class Board:
+    """
+    Represents the game board and handles its visual representation.
+
+    Attributes:
+        width (int): Width of the game window.
+        height (int): Height of the game window.
+        cell_size (int): Size of each cell in the game grid.
+        game: Reference to the main game object.
+        font (pygame.font.Font): Font for regular text.
+        large_font (pygame.font.Font): Font for large text.
+    """
+
     def __init__(self, width, height, game) -> None:
+        """
+        Initialize the Board object.
+
+        Args:
+            width (int): Width of the game window.
+            height (int): Height of the game window.
+            game: Reference to the main game object.
+        """
         self.width = width
         self.height = height
         self.cell_size = min(width, height) // 3  # To ensure all the cell size is same
-        # self.grid = [["" for _ in range(3)] for _ in range(3)]
         self.game = game
+
         pygame.font.init()
         self.font = pygame.font.SysFont("comincsans", 36)
         self.large_font = pygame.font.Font(None, 72)
 
     def draw(self, screen) -> None:
+        """Draw the game grid on the screen."""
         # Start 1 since we will multiply by cell_size
         for i in range(1, 3):
             # calculate the horizontal line
@@ -37,140 +60,151 @@ class Board:
                 (self.cell_size * i, self.height),
             )
 
-    # Move the function to the game class for purely game logic
-    # def mark_square(self, row: int, column: int, player) -> None:
-    # self.grid[row][column] = player
     def draw_figures(self, screen) -> None:
-        rotation_surface = pygame.Surface((self.width, self.height), pygame.SRCALPHA)
-        rotation_surface.fill((0, 0, 0, 0))  # Transparent background
+        """Draw the game pieces (X and 0) on the screen."""
         for row in range(constants.BOARD_ROWS):
             for col in range(constants.BOARD_COLUMNS):
                 center_x = int(col * self.cell_size + self.cell_size // 2)
                 center_y = int(row * self.cell_size + self.cell_size // 2)
                 if self.game.board[row][col] == 1:
-                    pygame.draw.circle(
-                        screen,
-                        constants.CIRCLE_COLOR,
-                        (center_x, center_y),
-                        self.cell_size // 3,
-                        constants.CIRCLE_WIDTH,
-                    )
+                    self._draw_circle(screen, center_x, center_y)
                 elif self.game.board[row][col] == 2:
-                    # Draw X for player 2
-                    offset = self.cell_size // 4
-                    pygame.draw.line(
-                        screen,
-                        constants.CROSS_COLOR,
-                        (center_x - offset, center_y - offset),
-                        (center_x + offset, center_y + offset),
-                        constants.CROSS_WIDTH,
-                    )
-                    pygame.draw.line(
-                        screen,
-                        constants.CROSS_COLOR,
-                        (center_x - offset, center_y + offset),
-                        (center_x + offset, center_y - offset),
-                        constants.CROSS_WIDTH
-                    )
+                    self._draw_cross(screen, center_x, center_y)
+
+    def _draw_circle(self, screen, center_x: int, center_y: int) -> None:
+        """Draw a circle (O) at the specified position."""
+        pygame.draw.circle(
+            screen,
+            constants.CIRCLE_COLOR,
+            (center_x, center_y),
+            self.cell_size // 3,
+            constants.CIRCLE_WIDTH,
+        )
+
+    def _draw_cross(self, screen, center_x: int, center_y: int) -> None:
+        """Draw a cross (X) at the specified position."""
+        offset = self.cell_size // 4
+        pygame.draw.line(
+            screen,
+            constants.CROSS_COLOR,
+            (center_x - offset, center_y - offset),
+            (center_x + offset, center_y + offset),
+            constants.CROSS_WIDTH,
+        )
+        pygame.draw.line(
+            screen,
+            constants.CROSS_COLOR,
+            (center_x - offset, center_y + offset),
+            (center_x + offset, center_y - offset),
+            constants.CROSS_WIDTH,
+        )
     
-    # TODO: READ ANALYZE
-    # Drawing for checking
-    def draw_vertical_win(self, screen, col: int, player: int) -> None:
-        pos_x = col * self.cell_size + self.cell_size // 2
-        color = constants.CIRCLE_COLOR if player == 1 else constants.CROSS_COLOR
-        pygame.draw.line(screen, color, (pos_x, 10), (pos_x, self.height - 10), 15)
-
-    def draw_horizontal_win(self, screen, row: int, player: int) -> None:
-        pos_y = row * self.cell_size + self.cell_size // 2
-        color = constants.CIRCLE_COLOR if player == 1 else constants.CROSS_COLOR
-        pygame.draw.line(screen, color, (10, pos_y), (self.width - 10, pos_y), 15)
-    
-    def draw_diagonal_win_asc(self, screen, player: int) -> None:
-        color = constants.CIRCLE_COLOR if player == 1 else constants.CROSS_COLOR
-        pygame.draw.line(screen, color, (10, self.height - 10), (self.width - 10, 10), 15)
-
-    def draw_diagonal_win_dsc(self, screen, player: int) -> None:
-        color = constants.CIRCLE_COLOR if player == 1 else constants.CROSS_COLOR
-        pygame.draw.line(screen, color, (10, 10), (self.width - 10, self.height - 10), 15)
-
-    # Check for all win lien
     def draw_win_line(self, screen) -> None:
+        """Draw the winning line on the screen."""
         state = self.game.final_state()
         if state == 0:
             return
         
         player = state
-        color = constants.CIRCLE_COLOR if player == 1 else constants.CROSS_COLOR
-        
-        # Check vertical wins
         for col in range(constants.BOARD_COLUMNS):
             if all(self.game.board[row][col] == player for row in range(constants.BOARD_ROWS)):
-                self.draw_vertical_win(screen, col, player)
+                self._draw_vertical_win(screen, col, player)
                 return
-
-        # Check horizontal wins
+            
         for row in range(constants.BOARD_ROWS):
             if all(self.game.board[row][col] == player for col in range(constants.BOARD_COLUMNS)):
-                self.draw_horizontal_win(screen, row, player)
+                self._draw_horizontal_win(screen, row, player)
                 return
-
-        # Check diagonal wins
+            
         if all(self.game.board[i][i] == player for i in range(3)):
-            self.draw_diagonal_win_dsc(screen, player)
+            # Since nag flip yung y-axis, we need to flip the diagonal
+            self._draw_diagonal_win_dsc(screen, player)
             return
-
+        
         if all(self.game.board[i][2-i] == player for i in range(3)):
-            self.draw_diagonal_win_asc(screen, player)
+            # Same dito, since nag flip yung y-axis, we need to flip the diagonal
+            self._draw_diagonal_win_asc(screen, player)
             return
 
-    def display_restart_message(self, screen) -> None:
-        text = self.font.render("Press R to restart", True, constants.BORDER_LINE)
-        screen.blit(text, (self.width // 2 - text.get_width() // 2, self.height // 2 - text.get_height() // 2))
+    def _draw_vertical_win(self, screen, col: int, player: int) -> None:
+        """Draw a vertical winning line on the screen."""
+        pos_x = col * self.cell_size + self.cell_size // 2
+        color = self._get_player_color(player)
+        pygame.draw.line(screen, color, (pos_x, 10), (pos_x, self.height - 10), 15)
+
+    def _draw_horizontal_win(self, screen, row: int, player: int) -> None:
+        """Draw a horizontal winning line."""
+        pos_y = row * self.cell_size + self.cell_size // 2
+        color = self._get_player_color(player)
+        pygame.draw.line(screen, color, (10, pos_y), (self.width - 10, pos_y), 15)
+    
+    def _draw_diagonal_win_asc(self, screen, player: int) -> None:
+        """Draw an ascending diagonal winning line."""
+        color = self._get_player_color(player)
+        pygame.draw.line(screen, color, (10, self.height - 10), (self.width - 10, 10), 15)
+
+    def _draw_diagonal_win_dsc(self, screen, player: int) -> None:
+        """Draw a descending diagonal winning line."""
+        color = self._get_player_color(player)
+        pygame.draw.line(screen, color, (10, 10), (self.width - 10, self.height - 10), 15)
+
+    @staticmethod
+    def _get_player_color(player: int):
+        """Get the color for the specified player."""
+        return constants.CIRCLE_COLOR if player == 1 else constants.CROSS_COLOR
+
+    # def display_restart_message(self, screen) -> None:
+        # """Display the restart message on the screen."""
+        # text = self.font.render("Press R to restart", True, constants.BORDER_LINE)
+        # screen.blit(text, (self.width // 2 - text.get_width() // 2, self.height // 2 - text.get_height() // 2))
 
     def restart(self, screen) -> None:
+        """Restart the game and clear the screen."""
         self.game.restart()
         screen.fill(constants.BACKGROUND_COLOR)
         self.draw(screen)
         pygame.display.update()
 
-    def draw_selection_screen(self, screen) -> None:
+    def draw_selection_screen(self, screen):
+        """Draw the game mode selection screen."""
         screen.fill(constants.BACKGROUND_COLOR)
         font = pygame.font.Font(None, 36)
 
-        pvp_text = font.render("1. Player vs Player", True, constants.BORDER_LINE)
-        pvai_text = font.render("2. Player vs AI (Random)", True, constants.BORDER_LINE)
-        pvai_minimax_text = font.render("3. Player vs AI (Minimax)", True, constants.BORDER_LINE)
+        options = [
+            "1. Player vs Player",
+            "2. Player vs AI (Random)",
+            "3. Player vs AI (Minimax)"
+        ]
 
-        pvp_rect = pvp_text.get_rect(center=(constants.WIDTH // 2, constants.HEIGHT // 2 - 50))
-        pvai_rect = pvai_text.get_rect(center=(constants.WIDTH // 2, constants.HEIGHT // 2 + 50))
-        pvai_minimax_rect = pvai_minimax_text.get_rect(center=(constants.WIDTH // 2, constants.HEIGHT // 2 + 150))
+        option_rects = []
+        for i, option in enumerate(options):
+            text = font.render(option, True, constants.BORDER_LINE)
+            rect = text.get_rect(center=(constants.WIDTH // 2, constants.HEIGHT // 2 + i * 100 - 50))
+            screen.blit(text, rect)
+            option_rects.append(rect)
 
-        screen.blit(pvp_text, pvp_rect)
-        screen.blit(pvai_text, pvai_rect)
-        screen.blit(pvai_minimax_text, pvai_minimax_rect)
-
-        return pvp_rect, pvai_rect, pvai_minimax_rect
-    
+        return option_rects
 
     def draw_winner_announcement(self, screen, winner):
-        # Create a semi-transparent overlay
+        """Draw the winner announcement on the screen."""
         overlay = pygame.Surface((self.width, self.height), pygame.SRCALPHA)
         overlay.fill((0, 0, 0, 128))  # Black with 50% opacity
         screen.blit(overlay, (0, 0))
 
-        # Prepare the winner text
-        if winner == "draw":
-            text = "It's a Draw!"
-        else:
-            text = f"Player {winner} Wins!"
-        
+        text = "It's a Draw!" if winner == "draw" else f"Player {winner} Wins!"
         text_surface = self.large_font.render(text, True, constants.WINNER_TEXT_COLOR)
         text_rect = text_surface.get_rect(center=(self.width // 2, self.height // 2 - 50))
-        
-        # Draw the winner text
         screen.blit(text_surface, text_rect)
 
-        # Draw the restart message
         restart_text = self.font.render("Press R to restart", True, constants.BORDER_LINE)
         restart_rect = restart_text.get_rect(center=(self.width // 2, self.height // 2 + 50))
         screen.blit(restart_text, restart_rect)
+
+    def draw_turn_indicator(self, screen, current_player_symbol):
+        """Draw the current player's turn indicator."""
+        turn_text = f" Turn: {current_player_symbol}"
+        text_surface = self.font.render(turn_text, True, constants.BORDER_LINE)
+        text_rect = text_surface.get_rect(center=(self.width // 2, 50))
+        screen.blit(text_surface, text_rect)
+
+    

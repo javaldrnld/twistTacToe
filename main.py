@@ -1,4 +1,5 @@
-##### IMPORTS #####
+"""Main Module for running the Tic-Tac-Toe game."""
+
 from src.board import Board
 from src import constants
 from src.game import Game
@@ -7,6 +8,7 @@ from src.ai import AI
 import pygame
 import sys
 
+
 pygame.init()
 screen = pygame.display.set_mode((constants.WIDTH, constants.HEIGHT))
 clock = pygame.time.Clock()
@@ -14,12 +16,8 @@ clock = pygame.time.Clock()
 ##### Instance of Class
 
 game = Game(ai_first=False)
-print(f"Game Mode: {game.gamemode}")
-
 board = Board(constants.WIDTH, constants.HEIGHT, game)
-
 ai = AI(game)
-print(f"AI init with level {ai.level}")
 
 # Add title
 pygame.display.set_caption("TIC-TAC-TOE")
@@ -32,7 +30,6 @@ game_started = False
 vs_ai = False
 
 ai_level = 0
-
 #### RESET GAME
 def reset_game() -> None:
     global game, board, ai, game_over, game_started, vs_ai, ai_level
@@ -43,6 +40,19 @@ def reset_game() -> None:
     game_started = False
     vs_ai = False
     ai_level = 0
+
+
+def draw_dimmed_board(screen, board, winner_text):
+    """Draw a dimmed board with winner announcement."""
+    dim_surface = pygame.Surface((constants.WIDTH, constants.HEIGHT), pygame.SRCALPHA)
+    dim_surface.fill((0, 0, 0, 128))  # Semi-transparent black
+    screen.blit(dim_surface, (0, 0))
+    
+    font = pygame.font.Font(None, 74)
+    text_surface = font.render(winner_text, True, (255, 255, 255))
+    text_rect = text_surface.get_rect(center=(constants.WIDTH // 2, constants.HEIGHT // 2))
+    screen.blit(text_surface, text_rect)
+
 
 ##### MAIN LOOP #####
 
@@ -91,13 +101,15 @@ while running:
                 # Why row is in Y? -> Same logic to x, y increases downwards making it y as row
 
                 # Vs Player
+                current_player_symbol = game.get_current_player_symbol()
                 game_state = game.handle_move(clicked_row, clicked_col)
                 if game_state != "continue":
                     game_over = True
                     if game_state == "draw":
                         print("It's a draw")
+                        winner_text = "It's a draw!"
                     else:
-                        print(f"Player {game_state.split('_')[1]} wins!")
+                        winner_text = f"Player {current_player_symbol} wins!"
 
 
                 # Vs AI
@@ -111,26 +123,9 @@ while running:
                         if game_state != "continue":
                             game_over = True
                             if game_state == "draw":
-                                print("Draw")
-                            elif game_state == "player_win":
-                                print("Wind")
-                    #if game_state != "continue":
-                        #game_over = True
-                        #if game_state != "continue":
-                            #game_over = True
-                            #if game_state == "ai_win":
-                                #print(f"AI ({['Random', 'Minimax'][ai_level]}) wins!")
-                            #elif game_state == "draw":
-                                #print("It's a draw")
-                            #elif game_state == "no_moves":
-                                #print("No more moves")
-                                
-
-                # if game_over:
-                    # if event.type == pygame.KEYDOWN and event.key == pygame.K_r:
-                        # game.restart()
-                        # board.restart(screen)
-                        # game_over = False
+                                winner_text = "It's a draw!"
+                            elif game_state == "player_2_win":
+                                winner_text = f"AI ({['Random', 'Minimax'][ai_level]}) wins!"
 
         if game_started:
             screen.fill(constants.BACKGROUND_COLOR)
@@ -138,7 +133,11 @@ while running:
             board.draw_figures(screen)
             if game_over:
                 board.draw_win_line(screen)
-                board.display_restart_message(screen)
+                draw_dimmed_board(screen, board, winner_text)
+                # board.display_restart_message(screen)
+            else:
+                current_player_symbol = game.get_current_player_symbol()
+                board.draw_turn_indicator(screen, current_player_symbol)
         
     pygame.display.update()
     clock.tick(60)

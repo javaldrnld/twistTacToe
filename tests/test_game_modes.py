@@ -89,7 +89,7 @@ def test_game_mode(mode):
         board.draw_figures(screen)
         if game_over:
             board.draw_win_line(screen)
-            board.display_restart_message(screen)
+            #board.display_restart_message(screen)
 
         pygame.display.update()
         clock.tick(60)
