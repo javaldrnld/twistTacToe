@@ -3,7 +3,18 @@
 
 ## Game Overview
 
-Ultimate Tic-Tac-Toe is	a normal Tic-Tac-Toe but with a	twist. The game	is played on a 3x3 grid	of a 3x3 Tic-Tac-Toe boards. To win, a player must win three small boards in a row, column, or diagonal on the larger grid.
+Twist Tic-Tac-Toe is a normal Tic-Tac-Toe but with a	twist. The game	is played on a 3x3 grid, every turn the board will rotate 90 degrees clockwise.
+
+## Features
+
+- Multiple game modes:
+    - Player vs Player
+    - Player vs AI (Easy)
+    - Player vs AI (Minimax Algorithm) 
+- Graphical user interface using Pygame
+- Turn indicator
+- Game restart functionality
+
 ## Installation
 
 Clone this repository
