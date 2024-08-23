@@ -70,21 +70,21 @@ while running:
         
         #### SELECTION SCREEN ####
         if not game_started:
-            pvprect, pvairect, pvp_minimax_rect = board.draw_selection_screen(screen)
+            button_rects = board.draw_selection_screen(screen)
             if event.type == pygame.MOUSEBUTTONDOWN:
-                if pvprect.collidepoint(event.pos):
-                    game_started = True
-                    vs_ai = False
-                elif pvairect.collidepoint(event.pos):
-                    game_started = True
-                    vs_ai = True
-                    ai_level = 0
-                    ai = AI(game, ai_level)
-                elif pvp_minimax_rect.collidepoint(event.pos):
-                    game_started = True
-                    vs_ai = True
-                    ai_level = 1
-                    ai = AI(game, ai_level)
+                for i, rect in enumerate(button_rects):
+                    if rect.collidepoint(event.pos):
+                        game_started = True
+                        if i == 0:
+                            vs_ai = False
+                        elif i == 1:
+                            vs_ai = True
+                            ai_level = 0
+                            ai = AI(game, ai_level)
+                        elif i == 2:
+                            vs_ai = True
+                            ai_level = 1
+                            ai = AI(game, ai_level)
         else:
             # If the mouse is clicked it will switch to
             if not game_over and event.type == pygame.MOUSEBUTTONDOWN:

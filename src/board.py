@@ -165,25 +165,25 @@ class Board:
         self.draw(screen)
         pygame.display.update()
 
-    def draw_selection_screen(self, screen):
-        """Draw the game mode selection screen."""
-        screen.fill(constants.BACKGROUND_COLOR)
-        font = pygame.font.Font(None, 36)
+    # def draw_selection_screen(self, screen):
+        # """Draw the game mode selection screen."""
+        # screen.fill(constants.BACKGROUND_COLOR)
+        # font = pygame.font.Font(None, 36)
 
-        options = [
-            "1. Player vs Player",
-            "2. Player vs AI (Random)",
-            "3. Player vs AI (Minimax)"
-        ]
+        # options = [
+            # "1. Player vs Player",
+            # "2. Player vs AI (Random)",
+            # "3. Player vs AI (Minimax)"
+        # ]
 
-        option_rects = []
-        for i, option in enumerate(options):
-            text = font.render(option, True, constants.BORDER_LINE)
-            rect = text.get_rect(center=(constants.WIDTH // 2, constants.HEIGHT // 2 + i * 100 - 50))
-            screen.blit(text, rect)
-            option_rects.append(rect)
+        # option_rects = []
+        # for i, option in enumerate(options):
+            # text = font.render(option, True, constants.BORDER_LINE)
+            # rect = text.get_rect(center=(constants.WIDTH // 2, constants.HEIGHT // 2 + i * 100 - 50))
+            # screen.blit(text, rect)
+            # option_rects.append(rect)
 
-        return option_rects
+        # return option_rects
 
     def draw_winner_announcement(self, screen, winner):
         """Draw the winner announcement on the screen."""
@@ -207,4 +207,52 @@ class Board:
         text_rect = text_surface.get_rect(center=(self.width // 2, 50))
         screen.blit(text_surface, text_rect)
 
+    def draw_selection_screen(self, screen):
+        """Draw the game mode selection screen with Nord-themed buttons."""
+        screen.fill(constants.BACKGROUND_COLOR)
+        font = pygame.font.Font(None, 36)
+
+        options = [
+            "Player vs Player",
+            "Player vs AI (Random)",
+            "Player vs AI (Minimax)"
+        ]
+
+        # Nord theme colors
+        nord_blue = (94, 129, 172)
+        nord_red = (191, 97, 106)
+        nord_green = (163, 190, 140)
+        text_color = (229, 233, 240)  # Nord Snow Storm (light gray)
+
+        button_colors = [nord_blue, nord_red, nord_green]
+        button_hover_colors = [
+            (122, 157, 200),  # Lighter blue
+            (219, 125, 134),  # Lighter red
+            (191, 218, 168)   # Lighter green
+        ]
+
+        button_rects = []
+        for i, option in enumerate(options):
+            button_width = 300
+            button_height = 60
+            x = constants.WIDTH // 2 - button_width // 2
+            y = constants.HEIGHT // 2 + i * 100 - 100
+
+            button_rect = pygame.Rect(x, y, button_width, button_height)
+            button_rects.append(button_rect)
+
+            # Check if mouse is hovering over the button
+            mouse_pos = pygame.mouse.get_pos()
+            color = button_hover_colors[i] if button_rect.collidepoint(mouse_pos) else button_colors[i]
+
+            # Draw button
+            pygame.draw.rect(screen, color, button_rect, border_radius=10)
+            pygame.draw.rect(screen, text_color, button_rect, 2, border_radius=10)
+
+            # Draw text
+            text = font.render(option, True, text_color)
+            text_rect = text.get_rect(center=button_rect.center)
+            screen.blit(text, text_rect)
+
+        return button_rects    
     
